@@ -8,46 +8,42 @@ body {
     align-items: center;
     height: 100vh;
     background-color: #f0f0f0;
-    overflow: hidden;
 }
 
 .carousel-container {
     width: 80%;
     overflow: hidden;
     position: relative;
-    perspective: 1000px;
-    touch-action: pan-y; /* Включаем свайпы */
 }
 
 .carousel {
     display: flex;
     transition: transform 0.5s ease-in-out;
-    transform-style: preserve-3d;
 }
 
 .card {
-    width: 25%; /* Пропорции 3:4 */
-    padding-top: 33.33%; /* Сохраняем пропорции 3:4 */
-    position: relative;
-    margin: 0 10px;
+    width: 30%; /* Три карточки видны одновременно */
+    aspect-ratio: 3 / 4; /* Пропорции 3:4 */
+    margin: 0 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     overflow: hidden;
+    position: relative;
     transform-origin: center;
-    transform: scale(0.9); /* Уменьшаем карточки по краям */
     transition: transform 0.3s ease-in-out;
 }
 
 .card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Изображение заполняет карточку */
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 100%;
-    height: auto;
-    object-fit: cover;
 }
 
-.card.center {
-    transform: scale(1.1); /* Увеличиваем центральную карточку */
+/* Эффект увеличения центральной карточки */
+.card:nth-child(2) {
+    transform: scale(1.1); /* На 10% больше */
 }
