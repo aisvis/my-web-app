@@ -1,62 +1,52 @@
-// script.js
-const carousel = document.querySelector('.carousel');
-let isDragging = false;
-let startX, startScrollLeft;
+// Лайтбокс
+const lightbox = document.getElementById('lightbox');
+const lightboxContent = document.querySelector('.lightbox-content');
+const lightboxCaption = document.querySelector('.lightbox-caption');
+const closeBtn = document.querySelector('.close');
+const prevBtn = document.querySelector('.prev');
+const nextBtn = document.querySelector('.next');
 
-// Перемещение карусели
-function moveCarousel(direction) {
-    const cardWidth = carousel.querySelector('.card').offsetWidth + 10; // Ширина карточки + отступ
-    if (direction === 'next') {
-        carousel.scrollLeft += cardWidth * 3; // Листаем три карточки
-    } else if (direction === 'prev') {
-        carousel.scrollLeft -= cardWidth * 3;
-    }
+let currentIndex = 0;
+const images = document.querySelectorAll('.gallery-image');
+const captions = document.querySelectorAll('.caption');
+
+// Открытие лайтбокса
+images.forEach((img, index) => {
+  img.addEventListener('click', () => {
+    currentIndex = index;
+    openLightbox();
+  });
+});
+
+function openLightbox() {
+  lightbox.style.display = 'flex';
+  updateLightbox();
 }
 
-// Обработка нажатия клавиш
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') moveCarousel('next');
-    if (e.key === 'ArrowLeft') moveCarousel('prev');
+function updateLightbox() {
+  lightboxContent.src = images[currentIndex].src;
+  lightboxCaption.textContent = captions[currentIndex].textContent;
+}
+
+// Закрытие лайтбокса
+closeBtn.addEventListener('click', () => {
+  lightbox.style.display = 'none';
 });
 
-// Обработка перетаскивания мышью
-carousel.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    startX = e.pageX;
-    startScrollLeft = carousel.scrollLeft;
+// Навигация (вперед/назад)
+prevBtn.addEventListener('click', () => {
+  currentIndex = (currentIndex - 1 + images.length) % images.length;
+  updateLightbox();
 });
 
-carousel.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX;
-    const walk = (x - startX) * 2; // Скорость перетаскивания
-    carousel.scrollLeft = startScrollLeft - walk;
+nextBtn.addEventListener('click', () => {
+  currentIndex = (currentIndex + 1) % images.length;
+  updateLightbox();
 });
 
-carousel.addEventListener('mouseup', () => {
-    isDragging = false;
-});
-
-carousel.addEventListener('mouseleave', () => {
-    isDragging = false;
-});
-
-// Обработка свайпа
-let touchStartX = 0;
-
-carousel.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].pageX;
-});
-
-carousel.addEventListener('touchmove', (e) => {
-    if (!touchStartX) return;
-    const touchEndX = e.touches[0].pageX;
-    const deltaX = touchStartX - touchEndX;
-    carousel.scrollLeft += deltaX * 2; // Скорость свайпа
-    touchStartX = touchEndX;
-});
-
-carousel.addEventListener('touchend', () => {
-    touchStartX = 0;
+// Закрытие по клику вне изображения
+lightbox.addEventListener('click', (e) => {
+  if (e.target === lightbox) {
+    lightbox.style.display = 'none';
+  }
 });
