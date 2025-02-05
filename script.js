@@ -1,12 +1,22 @@
 // script.js
 const carousel = document.querySelector('.carousel');
+const cards = document.querySelectorAll('.card');
+const cardWidth = carousel.offsetWidth / 3; // Ширина одной карточки
 let currentIndex = 0;
-const cardWidth = 320; // Ширина карточки + отступы
-const totalCards = 10;
 
+function updateCarousel() {
+    carousel.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+
+    // Добавляем класс 'center' для центральной карточки
+    cards.forEach((card, index) => {
+        card.classList.toggle('center', index === currentIndex + 1);
+    });
+}
+
+// Листание вправо/влево
 function moveCarousel(direction) {
     if (direction === 'next') {
-        if (currentIndex < totalCards - 3) {
+        if (currentIndex < cards.length - 3) {
             currentIndex++;
         } else {
             currentIndex = 0; // Зацикливание
@@ -15,32 +25,29 @@ function moveCarousel(direction) {
         if (currentIndex > 0) {
             currentIndex--;
         } else {
-            currentIndex = totalCards - 3; // Зацикливание
+            currentIndex = cards.length - 3; // Зацикливание
         }
     }
-    carousel.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+    updateCarousel();
 }
 
-// Добавляем кнопки для управления каруселью
-document.addEventListener('DOMContentLoaded', () => {
-    const prevButton = document.createElement('button');
-    prevButton.innerText = '←';
-    prevButton.style.position = 'absolute';
-    prevButton.style.left = '10px';
-    prevButton.style.top = '50%';
-    prevButton.style.transform = 'translateY(-50%)';
-    prevButton.style.zIndex = '10';
-    prevButton.onclick = () => moveCarousel('prev');
-
-    const nextButton = document.createElement('button');
-    nextButton.innerText = '→';
-    nextButton.style.position = 'absolute';
-    nextButton.style.right = '10px';
-    nextButton.style.top = '50%';
-    nextButton.style.transform = 'translateY(-50%)';
-    nextButton.style.zIndex = '10';
-    nextButton.onclick = () => moveCarousel('next');
-
-    document.querySelector('.carousel-container').appendChild(prevButton);
-    document.querySelector('.carousel-container').appendChild(nextButton);
+// Поддержка клавиш на клавиатуре
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') moveCarousel('next');
+    if (e.key === 'ArrowLeft') moveCarousel('prev');
 });
+
+// Поддержка свайпов
+let startX = 0;
+carouselContainer.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+});
+
+carouselContainer.addEventListener('touchend', (e) => {
+    const endX = e.changedTouches[0].clientX;
+    if (endX < startX - 50) moveCarousel('next'); // Свайп влево
+    if (endX > startX + 50) moveCarousel('prev'); // Свайп вправо
+});
+
+// Инициализация
+updateCarousel();
