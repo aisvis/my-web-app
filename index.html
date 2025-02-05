@@ -3,41 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Моё веб-приложение</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-        }
-        h1 {
-            color: #333;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <title>Карусель изображений</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Привет, мир!</h1>
-    <p>Это моё первое веб-приложение на GitHub Pages.</p>
-    <button onclick="showMessage()">Нажми меня</button>
-
-    <script>
-        function showMessage() {
-            alert("Вы нажали кнопку!");
-        }
-    </script>
+    <div class="carousel-container">
+        <div class="carousel">
+            <div class="card"><img src="https://via.placeholder.com/300x200?text=1" alt="Image 1"></div>
+            <div class="card"><img src="https://via.placeholder.com/300x200?text=2" alt="Image 2"></div>
+            <div class="card"><img src="https://via.placeholder.com/300x200?text=3" alt="Image 3"></div>
+            <div class="card"><img src="https://via.placeholder.com/300x200?text=4" alt="Image 4"></div>
+            <div class="card"><img src="https://via.placeholder.com/300x200?text=5" alt="Image 5"></div>
+            <div class="card"><img src="https://via.placeholder.com/300x200?text=6" alt="Image 6"></div>
+            <div class="card"><img src="https://via.placeholder.com/300x200?text=7" alt="Image 7"></div>
+            <div class="card"><img src="https://via.placeholder.com/300x200?text=8" alt="Image 8"></div>
+            <div class="card"><img src="https://via.placeholder.com/300x200?text=9" alt="Image 9"></div>
+            <div class="card"><img src="https://via.placeholder.com/300x200?text=10" alt="Image 10"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
