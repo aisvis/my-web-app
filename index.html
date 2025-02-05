@@ -5,54 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Галерея с лайками</title>
     <style>
-        /* Обновлённые стили */
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --overlay-bg: rgba(0, 0, 0, 0.9);
-            --heart-color: #ff3250;
+        /* Обновленные стили */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-auto-rows: 250px;
+            grid-auto-flow: dense;
+            gap: 15px;
+            padding: 15px;
         }
 
-        .gallery {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            /* Новое правило для лучшей адаптации */
-            grid-auto-rows: minmax(200px, 250px);
+        .gallery-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        /* Разные размеры элементов */
+        .gallery-item:nth-child(3n+2) {
+            grid-row: span 2;
+        }
+
+        .gallery-item:nth-child(5n+3) {
+            grid-column: span 2;
         }
 
         @media (max-width: 768px) {
             .gallery {
-                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .gallery-item:nth-child(n) {
+                grid-column: span 1;
+                grid-row: span 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery {
+                grid-template-columns: 1fr;
             }
         }
 
         /* Стили для лайков */
         .like-btn {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
+            top: 10px;
+            right: 10px;
             background: none;
             border: none;
             cursor: pointer;
             z-index: 2;
         }
 
-        .heart-icon {
+        .like-btn svg {
             width: 32px;
             height: 32px;
-            fill: #fff;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            fill: rgba(255, 255, 255, 0.7);
             transition: all 0.3s ease;
         }
 
-        .heart-icon.liked {
-            fill: var(--heart-color);
+        .like-btn.liked svg {
+            fill: #ff3259;
             transform: scale(1.2);
         }
 
-        .likes-counter {
+        .like-count {
             position: absolute;
-            bottom: 25px;
-            right: 60px;
+            top: 15px;
+            right: 50px;
             color: white;
             font-weight: bold;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
@@ -62,91 +84,67 @@
 <body>
     <!-- Остальная разметка без изменений -->
 
-    <!-- Обновлённый лайтбокс -->
-    <div class="lightbox">
-        <span class="close-btn">&times;</span>
-        <button class="nav-btn prev-btn">&lt;</button>
-        <button class="nav-btn next-btn">&gt;</button>
-        <div class="likes-counter">0</div>
-        <button class="like-btn">
-            <svg class="heart-icon" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-        </button>
-        <img class="lightbox-img" alt="Полноэкранное изображение">
-    </div>
-
     <script>
-        // Добавляем логику лайков
-        let likes = JSON.parse(localStorage.getItem('galleryLikes')) || {};
-
-        function updateLikesCounter(imgSrc) {
-            const count = likes[imgSrc] || 0;
-            document.querySelector('.likes-counter').textContent = count;
-            const heart = document.querySelector('.heart-icon');
-            heart.classList.toggle('liked', !!localStorage.getItem(`liked_${imgSrc}`));
-        }
-
-        // Обновляем обработчик открытия лайтбокса
-        function openLightbox(index) {
-            currentIndex = index;
-            const imgSrc = galleryItems[index].querySelector('img').src;
-            lightbox.classList.add('active');
-            lightboxImg.src = imgSrc;
-            updateLikesCounter(imgSrc);
-        }
-
-        // Обработчик лайка
-        document.querySelector('.like-btn').addEventListener('click', function() {
-            const imgSrc = lightboxImg.src;
-            const isLiked = localStorage.getItem(`liked_${imgSrc}`);
-            
-            if(isLiked) {
-                likes[imgSrc] = (likes[imgSrc] || 1) - 1;
-                localStorage.removeItem(`liked_${imgSrc}`);
-            } else {
-                likes[imgSrc] = (likes[imgSrc] || 0) + 1;
-                localStorage.setItem(`liked_${imgSrc}`, 'true');
-            }
-            
-            localStorage.setItem('galleryLikes', JSON.stringify(likes));
-            updateLikesCounter(imgSrc);
-        });
-
-        // Добавляем свайп-навигацию
+        // Добавляем обработчик свайпов
         let touchStartX = 0;
 
         lightbox.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
+            touchStartX = e.touches[0].clientX;
         });
 
         lightbox.addEventListener('touchend', e => {
-            const touchEndX = e.changedTouches[0].screenX;
-            const deltaX = touchEndX - touchStartX;
+            const touchEndX = e.changedTouches[0].clientX;
+            const deltaX = touchStartX - touchEndX;
 
-            if(Math.abs(deltaX) > 50) {
-                deltaX > 0 ? showPrev() : showNext();
+            if (Math.abs(deltaX) > 50) {
+                deltaX > 0 ? showNext() : showPrev();
             }
         });
 
-        // Улучшенная мобильная вёрстка
-        function updateGalleryLayout() {
-            const gallery = document.querySelector('.gallery');
-            if(window.innerWidth <= 480) {
-                gallery.style.gridAutoFlow = 'dense';
-                gallery.querySelectorAll('.gallery-item:nth-child(2n)').forEach(item => {
-                    item.style.gridRow = 'span 2';
-                });
-            } else {
-                gallery.style.gridAutoFlow = '';
-                gallery.querySelectorAll('.gallery-item').forEach(item => {
-                    item.style.gridRow = '';
-                });
-            }
+        // Добавляем кнопку лайка
+        const likeBtn = document.createElement('button');
+        likeBtn.className = 'like-btn';
+        likeBtn.innerHTML = `
+            <svg viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+        `;
+        const likeCount = document.createElement('div');
+        likeCount.className = 'like-count';
+        lightbox.append(likeBtn, likeCount);
+
+        // Логика лайков
+        let likes = JSON.parse(localStorage.getItem('galleryLikes')) || {};
+
+        function updateLikes(index) {
+            const imgId = galleryItems[index].querySelector('img').src;
+            if (!likes[imgId]) likes[imgId] = 0;
+            likeCount.textContent = likes[imgId];
+            likeBtn.classList.toggle('liked', localStorage.getItem(`liked_${imgId}`));
         }
 
-        window.addEventListener('resize', updateGalleryLayout);
-        updateGalleryLayout();
+        likeBtn.addEventListener('click', () => {
+            const imgId = galleryItems[currentIndex].querySelector('img').src;
+            const isLiked = localStorage.getItem(`liked_${imgId}`);
+            
+            if (isLiked) {
+                likes[imgId]--;
+                localStorage.removeItem(`liked_${imgId}`);
+            } else {
+                likes[imgId]++;
+                localStorage.setItem(`liked_${imgId}`, 'true');
+            }
+            
+            localStorage.setItem('galleryLikes', JSON.stringify(likes));
+            updateLikes(currentIndex);
+        });
+
+        // Обновляем при открытии лайтбокса
+        function openLightbox(index) {
+            currentIndex = index;
+            updateLikes(index);
+            // ... остальной код
+        }
     </script>
 </body>
 </html>
