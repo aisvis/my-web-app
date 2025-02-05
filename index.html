@@ -1,25 +1,255 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Интерактивная галерея</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Адаптивная галерея</title>
+    <style>
+        /* CSS переменные для темной/светлой темы */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --overlay-bg: rgba(0, 0, 0, 0.9);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --text-color: #ffffff;
+            }
+        }
+
+        /* Базовые стили */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, sans-serif;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Галерея */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.03);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            color: white;
+            padding: 15px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover .caption {
+            transform: translateY(0);
+        }
+
+        /* Лайтбокс */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--overlay-bg);
+            z-index: 1000;
+            animation: scaleUp 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            padding: 0 20px;
+        }
+
+        .prev-btn { left: 10px; }
+        .next-btn { right: 10px; }
+
+        /* Мобильная адаптация */
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .caption {
+                transform: none;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            
+            .gallery-item:hover .caption {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="gallery-container">
-    <div class="gallery" id="gallery"></div>
-  </div>
+    <div class="gallery">
+        <!-- Генерация 13 элементов галереи -->
+        <template id="gallery-item-template">
+            <div class="gallery-item">
+                <img loading="lazy" class="gallery-image" alt="Изображение">
+                <div class="caption">Подпись к изображению</div>
+            </div>
+        </template>
+    </div>
 
-  <!-- Лайтбокс -->
-  <div class="lightbox" id="lightbox">
-    <span class="close">&times;</span>
-    <button class="prev">&#10094;</button>
-    <button class="next">&#10095;</button>
-    <img src="" alt="Лайтбокс изображение" class="lightbox-content">
-    <div class="lightbox-caption"></div>
-  </div>
+    <!-- Лайтбокс -->
+    <div class="lightbox">
+        <span class="close-btn">&times;</span>
+        <button class="nav-btn prev-btn">&lt;</button>
+        <button class="nav-btn next-btn">&gt;</button>
+        <img class="lightbox-img" alt="Полноэкранное изображение">
+    </div>
 
-  <script src="script.js"></script>
+    <script>
+        // Инициализация галереи
+        const gallery = document.querySelector('.gallery');
+        const template = document.getElementById('gallery-item-template');
+
+        // Создание 13 элементов
+        for (let i = 1; i <= 13; i++) {
+            const clone = template.content.cloneNode(true);
+            const img = clone.querySelector('img');
+            const caption = clone.querySelector('.caption');
+            
+            img.src = `Images/Image (${i}).jpg`;
+            caption.textContent = `Изображение ${i}`;
+            
+            gallery.appendChild(clone);
+        }
+
+        // Лайтбокс логика
+        const lightbox = document.querySelector('.lightbox');
+        const lightboxImg = document.querySelector('.lightbox-img');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        let currentIndex = 0;
+
+        // Открытие лайтбокса
+        function openLightbox(index) {
+            currentIndex = index;
+            lightbox.classList.add('active');
+            lightboxImg.src = galleryItems[index].querySelector('img').src;
+        }
+
+        // Навигация
+        function showNext() {
+            currentIndex = (currentIndex + 1) % galleryItems.length;
+            lightboxImg.src = galleryItems[currentIndex].querySelector('img').src;
+        }
+
+        function showPrev() {
+            currentIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length;
+            lightboxImg.src = galleryItems[currentIndex].querySelector('img').src;
+        }
+
+        // Обработчики событий
+        galleryItems.forEach((item, index) => {
+            item.addEventListener('click', () => openLightbox(index));
+        });
+
+        document.querySelector('.close-btn').addEventListener('click', () => {
+            lightbox.classList.remove('active');
+        });
+
+        document.querySelector('.next-btn').addEventListener('click', showNext);
+        document.querySelector('.prev-btn').addEventListener('click', showPrev);
+
+        // Закрытие по клику вне изображения
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                lightbox.classList.remove('active');
+            }
+        });
+
+        // Управление клавиатурой
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.classList.contains('active')) {
+                if (e.key === 'ArrowRight') showNext();
+                if (e.key === 'ArrowLeft') showPrev();
+                if (e.key === 'Escape') lightbox.classList.remove('active');
+            }
+        });
+    </script>
 </body>
-</html>
+                                               </html>
