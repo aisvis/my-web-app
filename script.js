@@ -13,30 +13,39 @@ document.addEventListener('DOMContentLoaded', () => {
     let touchStartX = 0;
     let touchEndX = 0;
 
-    // Dynamic image loader
+    // Static image list with error handling
     async function fetchImages() {
         try {
-            const response = await fetch('/GaleryImages/');
-            const text = await response.text();
-            const parser = new DOMParser();
-            const html = parser.parseFromString(text, 'text/html');
-            return Array.from(html.querySelectorAll('a'))
-                .filter(a => a.href.match(/\.(jpe?g|png|webp)$/i))
-                .map(a => a.href.replace(window.location.origin, ''));
+            // Explicit list of image paths
+            return [
+                'GaleryImages/Gost_CShading_Beauty_View18.jpg',
+                'GaleryImages/Gost_CShading_Beauty_View53.jpg',
+                'GaleryImages/Kipr_CShading_Beauty_View520000.jpg',
+                'GaleryImages/Kuhnya-Gostinay_CShading_Beauty_View17.jpg',
+                'GaleryImages/SR2_View09.jpg',
+                'GaleryImages/TauHouse (11).jpg'
+            ];
         } catch (error) {
-            console.error('Error fetching images:', error);
+            console.error('Error loading images:', error);
+            showLoading(false);
             return [];
         }
     }
 
     // Load gallery images with loading indicator
     async function loadGallery() {
-        showLoading(true);
+        if (!gallery) {
+            console.error('Gallery element not found');
+            showLoading(false);
+            return;
+        }
         
-        const imageFiles = await fetchImages();
-        gallery.innerHTML = '';
-        
-        imageFiles.forEach((src, index) => {
+        try {
+            showLoading(true);
+            const imageFiles = await fetchImages();
+            gallery.innerHTML = '';
+            
+            imageFiles.forEach((src, index) => {
             const imgName = src.split('/').pop().split('.')[0];
             const item = document.createElement('div');
             item.className = 'gallery-item';
@@ -50,9 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
             gallery.appendChild(item);
             
             img.addEventListener('click', () => openLightbox(index));
-        });
-        
-        images = imageFiles;
+            });
+            
+            images = imageFiles;
+        } catch (error) {
+            console.error('Error loading gallery:', error);
+        } finally {
+            showLoading(false);
+        }
     }
 
     // Lightbox functions
