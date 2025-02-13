@@ -3,148 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Галерея с лайками</title>
-    <style>
-        /* Обновленные стили */
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            grid-auto-rows: 250px;
-            grid-auto-flow: dense;
-            gap: 15px;
-            padding: 15px;
-        }
-
-        .gallery-item {
-            position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-
-        /* Разные размеры элементов */
-        .gallery-item:nth-child(3n+2) {
-            grid-row: span 2;
-        }
-
-        .gallery-item:nth-child(5n+3) {
-            grid-column: span 2;
-        }
-
-        @media (max-width: 768px) {
-            .gallery {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .gallery-item:nth-child(n) {
-                grid-column: span 1;
-                grid-row: span 1;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .gallery {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Стили для лайков */
-        .like-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 2;
-        }
-
-        .like-btn svg {
-            width: 32px;
-            height: 32px;
-            fill: rgba(255, 255, 255, 0.7);
-            transition: all 0.3s ease;
-        }
-
-        .like-btn.liked svg {
-            fill: #ff3259;
-            transform: scale(1.2);
-        }
-
-        .like-count {
-            position: absolute;
-            top: 15px;
-            right: 50px;
-            color: white;
-            font-weight: bold;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-    </style>
+    <title>Flappy Bird</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/game.css">
 </head>
 <body>
-    <!-- Остальная разметка без изменений -->
-
-    <script>
-        // Добавляем обработчик свайпов
-        let touchStartX = 0;
-
-        lightbox.addEventListener('touchstart', e => {
-            touchStartX = e.touches[0].clientX;
-        });
-
-        lightbox.addEventListener('touchend', e => {
-            const touchEndX = e.changedTouches[0].clientX;
-            const deltaX = touchStartX - touchEndX;
-
-            if (Math.abs(deltaX) > 50) {
-                deltaX > 0 ? showNext() : showPrev();
-            }
-        });
-
-        // Добавляем кнопку лайка
-        const likeBtn = document.createElement('button');
-        likeBtn.className = 'like-btn';
-        likeBtn.innerHTML = `
-            <svg viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-        `;
-        const likeCount = document.createElement('div');
-        likeCount.className = 'like-count';
-        lightbox.append(likeBtn, likeCount);
-
-        // Логика лайков
-        let likes = JSON.parse(localStorage.getItem('galleryLikes')) || {};
-
-        function updateLikes(index) {
-            const imgId = galleryItems[index].querySelector('img').src;
-            if (!likes[imgId]) likes[imgId] = 0;
-            likeCount.textContent = likes[imgId];
-            likeBtn.classList.toggle('liked', localStorage.getItem(`liked_${imgId}`));
-        }
-
-        likeBtn.addEventListener('click', () => {
-            const imgId = galleryItems[currentIndex].querySelector('img').src;
-            const isLiked = localStorage.getItem(`liked_${imgId}`);
-            
-            if (isLiked) {
-                likes[imgId]--;
-                localStorage.removeItem(`liked_${imgId}`);
-            } else {
-                likes[imgId]++;
-                localStorage.setItem(`liked_${imgId}`, 'true');
-            }
-            
-            localStorage.setItem('galleryLikes', JSON.stringify(likes));
-            updateLikes(currentIndex);
-        });
-
-        // Обновляем при открытии лайтбокса
-        function openLightbox(index) {
-            currentIndex = index;
-            updateLikes(index);
-            // ... остальной код
-        }
-    </script>
+    <div class="game-container">
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+        <div class="score-display">
+            <span id="currentScore">0</span>
+            <span id="highScore">Рекорд: 0</span>
+        </div>
+        <div class="start-screen" id="startScreen">
+            <h1>Flappy Bird</h1>
+            <button onclick="startGame()">Старт</button>
+        </div>
+        <div class="game-over">
+            <h2>Игра окончена!</h2>
+            <p>Счёт: <span id="finalScore">0</span></p>
+            <button onclick="startGame()">Играть снова</button>
+        </div>
+    </div>
+    <script src="js/game.js"></script>
+    <script src="js/storage.js"></script>
 </body>
 </html>

@@ -1,0 +1,58 @@
+.game-container {
+  position: relative;
+  width: 400px;
+  margin: 20px auto;
+}
+
+#gameCanvas {
+  border: 3px solid var(--primary);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.score-display {
+  position: absolute;
+  top: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  color: var(--text);
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.start-screen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background-color: var(--primary);
+  padding: 2rem;
+  border-radius: 10px;
+  color: white;
+}
+
+.game-over {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--accent);
+  padding: 1.5rem;
+  border-radius: 8px;
+  color: white;
+  text-align: center;
+}
+
+.bird-flap {
+  animation: flap 0.3s ease-in-out infinite;
+}
+
+@keyframes flap {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
