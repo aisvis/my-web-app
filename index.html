@@ -3,28 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Bird</title>
-    <link rel="stylesheet" href="styles/base.css">
-    <link rel="stylesheet" href="styles/game.css">
+    <title>Фото Галерея</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="game-container">
-        <canvas id="gameCanvas" width="400" height="600"></canvas>
-        <div class="score-display">
-            <span id="currentScore">0</span>
-            <span id="highScore">Рекорд: 0</span>
+    <div class="gallery-container">
+        <div class="loading-indicator" id="loading-indicator">
+            <div class="spinner"></div>
+            <span>Загрузка новых изображений...</span>
         </div>
-        <div class="start-screen" id="startScreen">
-            <h1>Flappy Bird</h1>
-            <button onclick="startGame()">Старт</button>
-        </div>
-        <div class="game-over">
-            <h2>Игра окончена!</h2>
-            <p>Счёт: <span id="finalScore">0</span></p>
-            <button onclick="startGame()">Играть снова</button>
+        <div class="gallery" id="gallery"></div>
+    </div>
+
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <button class="close-btn">&times;</button>
+            <img class="lightbox-image" id="lightbox-image" alt="">
+            <div class="lightbox-controls">
+                <button class="nav-btn prev-btn">&lsaquo;</button>
+                <div class="likes-container">
+                    <button class="like-btn">
+                        <span class="heart">&hearts;</span>
+                        <span class="likes-count" id="likes-count">0</span>
+                    </button>
+                </div>
+                <button class="nav-btn next-btn">&rsaquo;</button>
+            </div>
         </div>
     </div>
-    <script src="js/game.js"></script>
-    <script src="js/storage.js"></script>
+
+    <script src="script.js"></script>
 </body>
 </html>
